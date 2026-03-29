@@ -1,818 +1,881 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Breached</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cairo:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --neon-green: #00ff41;
-            --dark-green: #003b00;
-            --red: #ff0040;
-            --bg: #0a0a0a;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Breach Detected</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<!-- ⬇️⬇️ غيّر هذا الرابط لرابطك ⬇️⬇️ -->
+<!-- الرابط موجود في المتغير redirectURL بأسفل الكود -->
 
-        body {
-            background: var(--bg);
-            color: var(--neon-green);
-            font-family: 'Share Tech Mono', monospace;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-            cursor: none;
-        }
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff41;
+    --green-dim: #00aa2a;
+    --green-dark: #003b00;
+    --red: #ff0040;
+    --red-dim: #aa0028;
+    --cyan: #00e5ff;
+    --bg: #0a0a0a;
+    --terminal-bg: rgba(0, 10, 0, 0.85);
+  }
 
-        /* كيرسر مخصص */
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--neon-green);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transition: transform 0.1s;
-            mix-blend-mode: difference;
-        }
-        .custom-cursor::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--red);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* كانفاس الماتريكس */
-        #matrixCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            opacity: 0.3;
-        }
+  body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: none;
+  }
 
-        /* خطوط المسح */
-        .scanline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 255, 65, 0.03) 2px,
-                rgba(0, 255, 65, 0.03) 4px
-            );
-        }
-        .scanline::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100px;
-            background: rgba(0, 255, 65, 0.06);
-            animation: scanMove 4s linear infinite;
-        }
-        @keyframes scanMove {
-            0% { top: -100px; }
-            100% { top: 100vh; }
-        }
+  /* Custom Cursor */
+  .cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transition: transform 0.1s;
+    mix-blend-mode: difference;
+  }
+  .cursor-dot {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: var(--green);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+  }
 
-        /* المحتوى الرئيسي */
-        .main-content {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+  /* Matrix Canvas */
+  #matrixCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.3;
+  }
 
-        /* رسالة التهكير الرئيسية */
-        .hack-title {
-            font-family: 'Cairo', sans-serif;
-            font-size: clamp(40px, 10vw, 120px);
-            font-weight: 900;
-            color: var(--red);
-            text-transform: uppercase;
-            text-align: center;
-            position: relative;
-            animation: glitchMain 0.3s infinite;
-            text-shadow: 
-                0 0 10px var(--red),
-                0 0 40px var(--red),
-                0 0 80px rgba(255, 0, 64, 0.5);
-            opacity: 0;
-            transform: scale(3);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .hack-title.visible {
-            opacity: 1;
-            transform: scale(1);
-        }
+  /* Scanline overlay */
+  .scanlines {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.15) 0px,
+      rgba(0,0,0,0.15) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
 
-        @keyframes glitchMain {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
-        }
+  /* Vignette */
+  .vignette {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.8) 100%);
+  }
 
-        .hack-title::before,
-        .hack-title::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .hack-title::before {
-            color: #0ff;
-            animation: glitchTop 0.2s infinite;
-            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
-        }
-        .hack-title::after {
-            color: var(--neon-green);
-            animation: glitchBottom 0.3s infinite;
-            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
-        }
+  /* Flash effect */
+  .flash {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 100;
+    pointer-events: none;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.05s;
+  }
+  .flash.active {
+    opacity: 0.8;
+  }
 
-        @keyframes glitchTop {
-            0% { transform: translate(0); }
-            50% { transform: translate(5px, -2px); }
-            100% { transform: translate(0); }
-        }
-        @keyframes glitchBottom {
-            0% { transform: translate(0); }
-            50% { transform: translate(-5px, 2px); }
-            100% { transform: translate(0); }
-        }
+  /* Warning Banner */
+  .warning-banner {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    z-index: 10;
+    background: var(--red);
+    color: white;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: slideDown 0.5s ease forwards 0.3s;
+    box-shadow: 0 2px 20px rgba(255,0,64,0.5);
+  }
 
-        /* الخطوط تحت العنوان */
-        .sub-text {
-            font-size: clamp(14px, 3vw, 22px);
-            color: var(--neon-green);
-            margin-top: 20px;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.8s;
-            text-shadow: 0 0 10px var(--neon-green);
-        }
-        .sub-text.visible {
-            opacity: 1;
-        }
+  @keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 
-        /* صندوق المعلومات الوهمية */
-        .info-box {
-            margin-top: 40px;
-            border: 1px solid var(--neon-green);
-            padding: 25px 35px;
-            background: rgba(0, 255, 65, 0.03);
-            min-width: 320px;
-            max-width: 500px;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-        }
-        .info-box.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .info-box::before {
-            content: '[ ACCESS GRANTED ]';
-            position: absolute;
-            top: -12px;
-            right: 20px;
-            background: var(--bg);
-            padding: 0 10px;
-            color: var(--neon-green);
-            font-size: 12px;
-        }
+  /* Main Container */
+  .main-container {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 50px 20px 20px;
+  }
 
-        .info-line {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(0, 255, 65, 0.1);
-            font-size: 14px;
-        }
-        .info-line:last-child {
-            border-bottom: none;
-        }
-        .info-label {
-            color: rgba(0, 255, 65, 0.5);
-        }
-        .info-value {
-            color: var(--red);
-            text-shadow: 0 0 5px var(--red);
-        }
+  /* Skull / Icon */
+  .skull-container {
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: glitchIn 0.5s ease forwards 0.5s;
+  }
+  .skull-container svg {
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(0 0 20px var(--green));
+  }
 
-        /* شريط التقدم الوهمي */
-        .progress-section {
-            margin-top: 30px;
-            width: 100%;
-            max-width: 500px;
-            opacity: 0;
-            transition: opacity 0.8s;
-        }
-        .progress-section.visible {
-            opacity: 1;
-        }
-        .progress-label {
-            font-size: 12px;
-            color: rgba(0, 255, 65, 0.6);
-            margin-bottom: 8px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(0, 255, 65, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--red);
-            box-shadow: 0 0 15px var(--red);
-            transition: width 0.3s;
-        }
+  @keyframes glitchIn {
+    0% { opacity: 0; transform: scale(3) rotate(10deg); filter: blur(10px); }
+    50% { opacity: 1; transform: scale(0.8) rotate(-5deg); }
+    70% { transform: scale(1.2) rotate(2deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
 
-        /* الكونسول في الأسفل */
-        .console-box {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            max-height: 150px;
-            overflow: hidden;
-            z-index: 5;
-            opacity: 0;
-            transition: opacity 1s;
-        }
-        .console-box.visible {
-            opacity: 1;
-        }
-        .console-line {
-            font-size: 11px;
-            color: rgba(0, 255, 65, 0.4);
-            line-height: 1.6;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .console-line .cmd {
-            color: var(--neon-green);
-        }
-        .console-line .warn {
-            color: var(--red);
-        }
+  /* Title */
+  .title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(28px, 6vw, 56px);
+    font-weight: 900;
+    color: var(--green);
+    text-shadow: 0 0 40px rgba(0,255,65,0.5), 0 0 80px rgba(0,255,65,0.2);
+    text-align: center;
+    margin-bottom: 5px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards 0.8s;
+    position: relative;
+  }
 
-        /* الوجه المخيف */
-        .skull-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 3;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.1s;
-        }
-        .skull-container.flash {
-            opacity: 0.15;
-        }
-        .skull-svg {
-            width: 400px;
-            height: 400px;
-            filter: drop-shadow(0 0 30px var(--red));
-        }
+  .title.glitch {
+    animation: glitchText 0.3s ease, fadeInUp 0.8s ease forwards 0.8s;
+  }
 
-        /* تأثير الفلاش الأحمر */
-        .red-flash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--red);
-            z-index: 20;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.05s;
-        }
-        .red-flash.active {
-            opacity: 0.3;
-        }
+  @keyframes glitchText {
+    0% { text-shadow: 0 0 40px rgba(0,255,65,0.5); transform: translate(0); }
+    20% { text-shadow: -3px 0 var(--red), 3px 0 var(--cyan); transform: translate(-3px, 2px); }
+    40% { text-shadow: 3px 0 var(--red), -3px 0 var(--cyan); transform: translate(3px, -2px); }
+    60% { text-shadow: -2px 0 var(--cyan), 2px 0 var(--red); transform: translate(-2px, 1px); }
+    80% { text-shadow: 2px 0 var(--red), -2px 0 var(--cyan); transform: translate(2px, -1px); }
+    100% { text-shadow: 0 0 40px rgba(0,255,65,0.5); transform: translate(0); }
+  }
 
-        /* رسالة المقلب */
-        .prank-reveal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 50;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1s;
-            padding: 20px;
-        }
-        .prank-reveal.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .prank-emoji {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: bounce 0.6s infinite alternate;
-        }
-        @keyframes bounce {
-            from { transform: translateY(0) rotate(-5deg); }
-            to { transform: translateY(-15px) rotate(5deg); }
-        }
-        .prank-text {
-            font-family: 'Cairo', sans-serif;
-            font-size: clamp(28px, 7vw, 60px);
-            font-weight: 900;
-            color: var(--neon-green);
-            text-align: center;
-            text-shadow: 0 0 20px var(--neon-green);
-        }
-        .prank-sub {
-            font-family: 'Cairo', sans-serif;
-            font-size: clamp(16px, 3vw, 24px);
-            color: rgba(0, 255, 65, 0.5);
-            margin-top: 15px;
-            text-align: center;
-        }
+  .subtitle {
+    font-size: clamp(10px, 2vw, 14px);
+    color: var(--red);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards 1s;
+    text-shadow: 0 0 20px rgba(255,0,64,0.5);
+  }
 
-        /* تأثير الضوضاء */
-        .noise-overlay {
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            animation: noiseMove 0.2s steps(5) infinite;
-        }
-        @keyframes noiseMove {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-5%, -5%); }
-            40% { transform: translate(5%, 5%); }
-            60% { transform: translate(-3%, 3%); }
-            80% { transform: translate(3%, -3%); }
-            100% { transform: translate(0, 0); }
-        }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-        /* إطار متحرك */
-        .border-anim {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            border: 1px solid rgba(0, 255, 65, 0.15);
-            z-index: 4;
-            pointer-events: none;
-        }
-        .border-anim::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: 0;
-            width: 80px;
-            height: 2px;
-            background: var(--neon-green);
-            box-shadow: 0 0 10px var(--neon-green);
-            animation: borderSweep 3s linear infinite;
-        }
-        @keyframes borderSweep {
-            0% { left: 0; top: -1px; }
-            25% { left: 100%; top: -1px; width: 2px; height: 80px; }
-            50% { left: 100%; top: 100%; width: 80px; height: 2px; }
-            75% { left: -1px; top: 100%; width: 2px; height: 80px; }
-            100% { left: 0; top: -1px; width: 80px; height: 2px; }
-        }
+  /* Terminal */
+  .terminal {
+    width: min(700px, 95vw);
+    background: var(--terminal-bg);
+    border: 1px solid var(--green-dark);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(0,255,65,0.1), inset 0 0 60px rgba(0,0,0,0.5);
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards 1.2s;
+    backdrop-filter: blur(10px);
+  }
 
-        /* أيقونة التحذير */
-        .warning-icon {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .warning-icon.visible {
-            opacity: 1;
-        }
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(0,255,65,0.05);
+    border-bottom: 1px solid var(--green-dark);
+  }
+  .terminal-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .terminal-dot.red { background: #ff5f56; }
+  .terminal-dot.yellow { background: #ffbd2e; }
+  .terminal-dot.green { background: #27c93f; }
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(0,255,65,0.5);
+    letter-spacing: 2px;
+  }
 
-        /* timestamp */
-        .timestamp {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            font-size: 11px;
-            color: rgba(0, 255, 65, 0.3);
-            z-index: 5;
-        }
+  .terminal-body {
+    padding: 16px;
+    height: 280px;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.8;
+    direction: ltr;
+    text-align: left;
+    scrollbar-width: thin;
+    scrollbar-color: var(--green-dark) transparent;
+  }
+  .terminal-body::-webkit-scrollbar { width: 4px; }
+  .terminal-body::-webkit-scrollbar-track { background: transparent; }
+  .terminal-body::-webkit-scrollbar-thumb { background: var(--green-dark); border-radius: 2px; }
 
-        .ip-display {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            font-size: 11px;
-            color: rgba(255, 0, 64, 0.4);
-            z-index: 5;
-        }
+  .line { opacity: 0; }
+  .line.visible { opacity: 1; }
+  .line .prompt { color: var(--green); }
+  .line .command { color: var(--green); font-weight: 700; }
+  .line .output { color: var(--green-dim); }
+  .line .warning { color: var(--red); }
+  .line .success { color: var(--cyan); }
+  .line .info { color: #888; }
 
-        @media (max-width: 600px) {
-            .info-box {
-                min-width: auto;
-                width: 90%;
-                padding: 20px;
-            }
-            .skull-svg {
-                width: 250px;
-                height: 250px;
-            }
-        }
+  .typing-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--green);
+    animation: blink 0.8s step-end infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
 
-        /* تأثير اهتزاز الشاشة */
-        @keyframes screenShake {
-            0%, 100% { transform: translate(0); }
-            10% { transform: translate(-5px, -3px); }
-            20% { transform: translate(5px, 3px); }
-            30% { transform: translate(-3px, 5px); }
-            40% { transform: translate(3px, -5px); }
-            50% { transform: translate(-5px, 2px); }
-            60% { transform: translate(5px, -2px); }
-            70% { transform: translate(-2px, -5px); }
-            80% { transform: translate(2px, 5px); }
-            90% { transform: translate(-3px, 3px); }
-        }
-        .shake {
-            animation: screenShake 0.5s ease-in-out;
-        }
-    </style>
+  /* Progress Section */
+  .progress-section {
+    width: min(700px, 95vw);
+    margin-top: 20px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .progress-section.visible { opacity: 1; }
+
+  .progress-item {
+    margin-bottom: 12px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.4s ease;
+  }
+  .progress-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 4px;
+    direction: ltr;
+    text-align: left;
+  }
+  .progress-label .name { color: var(--green); letter-spacing: 1px; }
+  .progress-label .percent { color: var(--cyan); font-weight: 700; }
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(0,255,65,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px currentColor;
+  }
+  .progress-fill.green { background: var(--green); color: var(--green); }
+  .progress-fill.cyan { background: var(--cyan); color: var(--cyan); }
+  .progress-fill.red { background: var(--red); color: var(--red); }
+
+  /* Status Grid */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    width: min(700px, 95vw);
+    margin-top: 20px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .status-grid.visible { opacity: 1; }
+
+  .status-card {
+    background: rgba(0,255,65,0.03);
+    border: 1px solid rgba(0,255,65,0.1);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.4s ease;
+  }
+  .status-card.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .status-card .label {
+    font-size: 9px;
+    color: #666;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    direction: ltr;
+  }
+  .status-card .value {
+    font-size: 18px;
+    font-weight: 700;
+    direction: ltr;
+  }
+  .status-card .value.green { color: var(--green); text-shadow: 0 0 10px rgba(0,255,65,0.5); }
+  .status-card .value.red { color: var(--red); text-shadow: 0 0 10px rgba(255,0,64,0.5); }
+  .status-card .value.cyan { color: var(--cyan); text-shadow: 0 0 10px rgba(0,229,255,0.5); }
+
+  /* Access Granted Overlay */
+  .access-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  .access-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .access-text {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(30px, 8vw, 80px);
+    font-weight: 900;
+    color: var(--green);
+    text-shadow: 0 0 60px rgba(0,255,65,0.8), 0 0 120px rgba(0,255,65,0.3);
+    animation: pulse 1s ease-in-out infinite;
+    text-align: center;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+  }
+
+  /* Corner decorations */
+  .corner {
+    position: fixed;
+    z-index: 5;
+    width: 60px;
+    height: 60px;
+    opacity: 0.3;
+  }
+  .corner-tl { top: 40px; left: 10px; border-top: 2px solid var(--green); border-left: 2px solid var(--green); }
+  .corner-tr { top: 40px; right: 10px; border-top: 2px solid var(--green); border-right: 2px solid var(--green); }
+  .corner-bl { bottom: 10px; left: 10px; border-bottom: 2px solid var(--green); border-left: 2px solid var(--green); }
+  .corner-br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--green); border-right: 2px solid var(--green); }
+
+  /* Bottom info bar */
+  .info-bar {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 20px;
+    font-size: 9px;
+    color: #333;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    direction: ltr;
+    border-top: 1px solid rgba(0,255,65,0.05);
+  }
+
+  /* Glitch overlay layers */
+  .glitch-layer {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 90;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .glitch-layer.active {
+    animation: glitchOverlay 0.15s ease;
+  }
+  @keyframes glitchOverlay {
+    0% { opacity: 0; }
+    25% { opacity: 0.1; background: var(--red); transform: translateX(-5px); }
+    50% { opacity: 0; }
+    75% { opacity: 0.1; background: var(--cyan); transform: translateX(5px); }
+    100% { opacity: 0; transform: translateX(0); }
+  }
+
+  /* Countdown */
+  .countdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 60;
+    font-size: 120px;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 80px rgba(0,255,65,0.8);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .countdown.active {
+    animation: countPop 0.8s ease forwards;
+  }
+  @keyframes countPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(3); }
+    30% { opacity: 1; transform: translate(-50%, -50%) scale(0.9); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 640px) {
+    .terminal-body { height: 200px; font-size: 10px; }
+    .status-grid { grid-template-columns: repeat(2, 1fr); }
+    .cursor, .cursor-dot { display: none; }
+    body { cursor: default; }
+  }
+</style>
 </head>
 <body>
-    <!-- كيرسر مخصص -->
-    <div class="custom-cursor" id="cursor"></div>
 
-    <!-- كانفاس الماتريكس -->
-    <canvas id="matrixCanvas"></canvas>
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
 
-    <!-- تأثيرات بصرية -->
-    <div class="scanline"></div>
-    <div class="noise-overlay"></div>
-    <div class="border-anim"></div>
-    <div class="red-flash" id="redFlash"></div>
+<!-- Matrix Background -->
+<canvas id="matrixCanvas"></canvas>
 
-    <!-- الوجه المخيف -->
-    <div class="skull-container" id="skull">
-        <svg class="skull-svg" viewBox="0 0 200 200" fill="none">
-            <circle cx="100" cy="85" r="60" stroke="#ff0040" stroke-width="2" fill="none"/>
-            <circle cx="80" cy="75" r="15" stroke="#ff0040" stroke-width="2" fill="none"/>
-            <circle cx="120" cy="75" r="15" stroke="#ff0040" stroke-width="2" fill="none"/>
-            <circle cx="80" cy="75" r="5" fill="#ff0040"/>
-            <circle cx="120" cy="75" r="5" fill="#ff0040"/>
-            <path d="M85 105 L100 115 L115 105" stroke="#ff0040" stroke-width="2" fill="none"/>
-            <line x1="100" y1="115" x2="100" y2="130" stroke="#ff0040" stroke-width="2"/>
-            <line x1="90" y1="125" x2="110" y2="125" stroke="#ff0040" stroke-width="2"/>
-            <path d="M55 85 L40 50" stroke="#ff0040" stroke-width="1.5"/>
-            <path d="M145 85 L160 50" stroke="#ff0040" stroke-width="1.5"/>
-            <path d="M60 50 L70 70" stroke="#ff0040" stroke-width="1.5"/>
-            <path d="M140 50 L130 70" stroke="#ff0040" stroke-width="1.5"/>
-            <path d="M55 100 L40 140" stroke="#ff0040" stroke-width="1.5"/>
-            <path d="M145 100 L160 140" stroke="#ff0040" stroke-width="1.5"/>
-        </svg>
+<!-- Overlays -->
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="flash" id="flash"></div>
+<div class="glitch-layer" id="glitchLayer"></div>
+
+<!-- Corners -->
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<!-- Warning Banner -->
+<div class="warning-banner">⚠ SECURITY BREACH DETECTED — UNAUTHORIZED ACCESS ⚠</div>
+
+<!-- Main Content -->
+<div class="main-container">
+
+  <!-- Skull Icon -->
+  <div class="skull-container">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 2C8.5 2 5 5 5 9c0 2.5 1 4 2.5 5.5V17h9v-2.5C18 13 19 11.5 19 9c0-4-3.5-7-7-7z" stroke="var(--green)"/>
+      <line x1="5" y1="17" x2="19" y2="17" stroke="var(--green)"/>
+      <line x1="8" y1="17" x2="8" y2="20" stroke="var(--green)"/>
+      <line x1="12" y1="17" x2="12" y2="20" stroke="var(--green)"/>
+      <line x1="16" y1="17" x2="16" y2="20" stroke="var(--green)"/>
+      <circle cx="9.5" cy="9" r="1.5" fill="var(--green)"/>
+      <circle cx="14.5" cy="9" r="1.5" fill="var(--green)"/>
+      <path d="M10 12.5c0 0 1 1 2 1s2-1 2-1" stroke="var(--green)" stroke-width="1.2"/>
+    </svg>
+  </div>
+
+  <!-- Title -->
+  <div class="title" id="mainTitle">تم اختراق النظام</div>
+  <div class="subtitle">System Compromised — Initializing Exploit</div>
+
+  <!-- Terminal -->
+  <div class="terminal">
+    <div class="terminal-header">
+      <div class="terminal-dot red"></div>
+      <div class="terminal-dot yellow"></div>
+      <div class="terminal-dot green"></div>
+      <div class="terminal-title">root@kali:~/exploit</div>
     </div>
+    <div class="terminal-body" id="terminalBody"></div>
+  </div>
 
-    <!-- الطابع الزمني -->
-    <div class="timestamp" id="timestamp"></div>
-    <div class="ip-display" id="ipDisplay">SESSION: 0x4F2A...</div>
-
-    <!-- المحتوى الرئيسي -->
-    <div class="main-content" id="mainContent">
-        <svg class="warning-icon" id="warningIcon" viewBox="0 0 100 100" fill="none">
-            <polygon points="50,5 95,90 5,90" stroke="#ff0040" stroke-width="3" fill="none"/>
-            <line x1="50" y1="30" x2="50" y2="60" stroke="#ff0040" stroke-width="4"/>
-            <circle cx="50" cy="75" r="4" fill="#ff0040"/>
-        </svg>
-        <h1 class="hack-title" id="hackTitle" data-text="تم الاختراق">تم الاختراق</h1>
-        <p class="sub-text" id="subText">SYSTEM COMPROMISED — ALL DATA EXPOSED</p>
-
-        <div class="info-box" id="infoBox">
-            <div class="info-line">
-                <span class="info-label">DEVICE:</span>
-                <span class="info-value" id="fakeDevice">Unknown</span>
-            </div>
-            <div class="info-line">
-                <span class="info-label">LOCATION:</span>
-                <span class="info-value" id="fakeLocation">Tracking...</span>
-            </div>
-            <div class="info-line">
-                <span class="info-label">FILES ACCESSED:</span>
-                <span class="info-value" id="fakeFiles">0</span>
-            </div>
-            <div class="info-line">
-                <span class="info-label">PASSWORDS:</span>
-                <span class="info-value">soon</span>
-            </div>
-            <div class="info-line">
-                <span class="info-label">gmail : </span>
-                <span class="info-value" id="soon">soon</span>
-            </div>
-        </div>
-
-        <div class="progress-section" id="progressSection">
-            <div class="progress-label" id="progressLabel">EXTRACTING DATA... 0%</div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
+  <!-- Progress Bars -->
+  <div class="progress-section" id="progressSection">
+    <div class="progress-item" id="prog1">
+      <div class="progress-label">
+        <span class="name">[●] Firewall Bypass</span>
+        <span class="percent" id="prog1Val">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill green" id="prog1Fill"></div></div>
     </div>
-
-    <!-- الكونسول -->
-    <div class="console-box" id="consoleBox">
-        <div id="consoleLines"></div>
+    <div class="progress-item" id="prog2">
+      <div class="progress-label">
+        <span class="name">[●] Database Decrypt</span>
+        <span class="percent" id="prog2Val">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill cyan" id="prog2Fill"></div></div>
     </div>
-
-    <!-- كشف المقلب -->
-    <div class="prank-reveal" id="prankReveal">
-        <div class="prank-emoji">😂🤣</div>
-        <div class="prank-text">يا قندرة</div>
-        <div class="prank-sub">كل خرا</div>
+    <div class="progress-item" id="prog3">
+      <div class="progress-label">
+        <span class="name">[●] Data Exfiltration</span>
+        <span class="percent" id="prog3Val">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill red" id="prog3Fill"></div></div>
     </div>
+  </div>
 
-    <script>
-        // === متغيرات عامة ===
-        const cursor = document.getElementById('cursor');
-        const hackTitle = document.getElementById('hackTitle');
-        const subText = document.getElementById('subText');
-        const warningIcon = document.getElementById('warningIcon');
-        const infoBox = document.getElementById('infoBox');
-        const progressSection = document.getElementById('progressSection');
-        const progressFill = document.getElementById('progressFill');
-        const progressLabel = document.getElementById('progressLabel');
-        const consoleBox = document.getElementById('consoleBox');
-        const consoleLines = document.getElementById('consoleLines');
-        const redFlash = document.getElementById('redFlash');
-        const skull = document.getElementById('skull');
-        const prankReveal = document.getElementById('prankReveal');
-        const timestampEl = document.getElementById('timestamp');
-        const mainContent = document.getElementById('mainContent');
+  <!-- Status Grid -->
+  <div class="status-grid" id="statusGrid">
+    <div class="status-card" id="sc1">
+      <div class="label">IP Address</div>
+      <div class="value green" id="fakeIP">—</div>
+    </div>
+    <div class="status-card" id="sc2">
+      <div class="label">Port</div>
+      <div class="value cyan" id="fakePort">—</div>
+    </div>
+    <div class="status-card" id="sc3">
+      <div class="label">Packets Sent</div>
+      <div class="value red" id="fakePackets">0</div>
+    </div>
+    <div class="status-card" id="sc4">
+      <div class="label">Encryption</div>
+      <div class="value green">AES-256</div>
+    </div>
+  </div>
 
-        let prankEnded = false;
+</div>
 
-        // === الكيرسر المخصص ===
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX - 10 + 'px';
-            cursor.style.top = e.clientY - 10 + 'px';
-        });
+<!-- Access Overlay -->
+<div class="access-overlay" id="accessOverlay">
+  <div class="access-text">تم الدخول بنجاح ✓</div>
+</div>
 
-        // === تأثير الماتريكس ===
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx = canvas.getContext('2d');
+<!-- Countdown -->
+<div class="countdown" id="countdown"></div>
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+<!-- Info Bar -->
+<div class="info-bar">
+  <span id="clock">00:00:00</span>
+  <span>EXPLOIT FRAMEWORK v4.7.2</span>
+  <span id="fps">0 FPS</span>
+</div>
 
-        const matrixChars = 'アカサタナハマヤラワ0123456789ABCDEF<>{}[]!@#$%^&*';
-        const fontSize = 14;
-        let columns = Math.floor(canvas.width / fontSize);
-        let drops = Array(columns).fill(1);
+<script>
+// ⬇️⬇️⬇️ غيّر هذا الرابط لرابطك ⬇️⬇️⬇️
+const redirectURL = "https://www.pornhub.com/";
+// ⬆️⬆️⬆️ غيّر هذا الرابط لرابطك ⬆️⬆️⬆️
 
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff41';
-            ctx.font = fontSize + 'px Share Tech Mono';
+// ===== MATRIX RAIN =====
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF{}[]<>/\\';
+const fontSize = 14;
+const columns = Math.floor(canvas.width / fontSize);
+const drops = Array(columns).fill(1);
 
-            for (let i = 0; i < drops.length; i++) {
-                const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-                ctx.fillStyle = Math.random() > 0.98 ? '#ff0040' : '#00ff41';
-                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = fontSize + 'px JetBrains Mono';
+  for (let i = 0; i < drops.length; i++) {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillStyle = Math.random() > 0.98 ? '#fff' : '#00ff41';
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 50);
 
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 50);
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
-        window.addEventListener('resize', () => {
-            columns = Math.floor(canvas.width / fontSize);
-            drops = Array(columns).fill(1);
-        });
+// ===== CUSTOM CURSOR =====
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursorDot');
+document.addEventListener('mousemove', (e) => {
+  cursor.style.left = e.clientX - 10 + 'px';
+  cursor.style.top = e.clientY - 10 + 'px';
+  cursorDot.style.left = e.clientX - 2 + 'px';
+  cursorDot.style.top = e.clientY - 2 + 'px';
+});
 
-        // === الطابع الزمني ===
-        function updateTimestamp() {
-            const now = new Date();
-            timestampEl.textContent = now.toLocaleString('en-US', {
-                year: 'numeric', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-            });
-        }
-        setInterval(updateTimestamp, 1000);
-        updateTimestamp();
+// ===== CLOCK =====
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toTimeString().split(' ')[0];
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-        // === بيانات وهمية ===
-        const fakeDevices = ['pc'];
-        const fakeLocations = ['فلسطين , القدس'];
+// ===== FPS =====
+let frameCount = 0;
+let lastTime = performance.now();
+function countFPS() {
+  frameCount++;
+  const now = performance.now();
+  if (now - lastTime >= 1000) {
+    document.getElementById('fps').textContent = frameCount + ' FPS';
+    frameCount = 0;
+    lastTime = now;
+  }
+  requestAnimationFrame(countFPS);
+}
+countFPS();
 
-        document.getElementById('fakeDevice').textContent = fakeDevices[Math.floor(Math.random() * fakeDevices.length)];
-        document.getElementById('fakeLocation').textContent = fakeLocations[Math.floor(Math.random() * fakeLocations.length)];
+// ===== FLASH & GLITCH HELPERS =====
+function flash() {
+  const el = document.getElementById('flash');
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 80);
+}
 
-        // === أوامر الكونسول الوهمية ===
-        const fakeCommands = [
-            { cmd: 'root@kali:~# nmap -sV 192.168.1.', warn: false },
-            { cmd: 'root@kali:~# ssh admin@target -o StrictHostKeyChecking=no', warn: false },
-            { cmd: '[WARNING] Firewall bypassed — port 443 open', warn: true },
-            { cmd: 'root@kali:~# mysql -u root -p ********', warn: false },
-            { cmd: '[ACCESS] Database dumped: 247 tables exported', warn: true },
-            { cmd: 'root@kali:~# wget http://exploit-db/payload.sh', warn: false },
-            { cmd: '[INFO] Keylogger deployed successfully', warn: true },
-            { cmd: 'root@kali:~# cat /etc/shadow | cut -d: -f1,2', warn: false },
-            { cmd: '[CRITICAL] Root privileges obtained', warn: true },
-            { cmd: 'root@kali:~# python3 webcam_capture.py --stream', warn: false },
-            { cmd: '[ALERT] Camera feed active — recording started', warn: true },
-            { cmd: 'root@kali:~# find / -name "*.pdf" -exec cp {} /tmp/stolen', warn: false },
-            { cmd: '[INFO] 1,247 files copied to remote server', warn: true },
-            { cmd: 'root@kali:~# chromium --headless --screenshot target.png', warn: false },
-            { cmd: '[WARNING] WhatsApp database decrypted', warn: true },
-            { cmd: 'root@kali:~# crackmapexec smb target -u admin -p password123', warn: false },
-            { cmd: '[SUCCESS] All credentials extracted and saved', warn: true },
-        ];
+function glitch() {
+  const el = document.getElementById('glitchLayer');
+  el.classList.remove('active');
+  void el.offsetWidth;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 200);
+}
 
-        let cmdIndex = 0;
-        function addConsoleLine() {
-            if (prankEnded) return;
-            const line = document.createElement('div');
-            line.className = 'console-line';
-            const cmdData = fakeCommands[cmdIndex % fakeCommands.length];
-            line.innerHTML = cmdData.warn
-                ? `<span class="warn">${cmdData.cmd}</span>`
-                : `<span class="cmd">${cmdData.cmd}</span>`;
-            consoleLines.appendChild(line);
-            consoleBox.scrollTop = consoleBox.scrollHeight;
+function glitchTitle() {
+  const t = document.getElementById('mainTitle');
+  t.classList.add('glitch');
+  setTimeout(() => t.classList.remove('glitch'), 400);
+}
 
-            // نحافظ على آخر 8 أسطر فقط
-            while (consoleLines.children.length > 8) {
-                consoleLines.removeChild(consoleLines.firstChild);
-            }
+// ===== TERMINAL TYPING =====
+const terminalBody = document.getElementById('terminalBody');
+const terminalLines = [
+  { type: 'cmd', text: 'nmap -sV -sC --script=vuln 192.168.1.0/24' },
+  { type: 'out', text: 'Scanning 256 hosts... [################] 100%' },
+  { type: 'warn', text: 'WARNING: 14 open ports detected' },
+  { type: 'cmd', text: 'exploit -t sql_injection --target=db.server.local' },
+  { type: 'out', text: '[*] Loading payload: union_based_sqli' },
+  { type: 'out', text: '[*] Testing parameter: id=1\' OR 1=1--' },
+  { type: 'success', text: '[+] VULNERABLE! SQL Injection confirmed' },
+  { type: 'cmd', text: 'hashcat -m 1000 -a 0 hashes.txt rockyou.txt' },
+  { type: 'out', text: '[*] Cracking NTLM hashes...' },
+  { type: 'success', text: '[+] Hash cracked: admin@system:Qw3rT!99$' },
+  { type: 'cmd', text: 'msfconsole -x "use exploit/multi/handler"' },
+  { type: 'out', text: '[*] Starting reverse handler on port 4444...' },
+  { type: 'success', text: '[+] Meterpreter session 1 opened!' },
+  { type: 'cmd', text: 'dump -all --dest=./extracted_data/' },
+  { type: 'out', text: '[*] Extracting: users.db (2.4 GB)' },
+  { type: 'out', text: '[*] Extracting: financial_records.enc (890 MB)' },
+  { type: 'success', text: '[+] All data extracted successfully!' },
+  { type: 'warn', text: '[!] Trace detected — initiating cleanup...' },
+  { type: 'cmd', text: 'cover-tracks --wipe-logs --clear-history' },
+  { type: 'success', text: '[+] All traces eliminated. Access secured.' },
+];
 
-            cmdIndex++;
-        }
+function createLine(lineData) {
+  const div = document.createElement('div');
+  div.className = 'line';
+  
+  if (lineData.type === 'cmd') {
+    div.innerHTML = `<span class="prompt">root@kali:~# </span><span class="command"></span><span class="typing-cursor"></span>`;
+  } else if (lineData.type === 'warn') {
+    div.innerHTML = `<span class="warning">${lineData.text}</span>`;
+  } else if (lineData.type === 'success') {
+    div.innerHTML = `<span class="success">${lineData.text}</span>`;
+  } else {
+    div.innerHTML = `<span class="output">${lineData.text}</span>`;
+  }
+  
+  terminalBody.appendChild(div);
+  return div;
+}
 
-        // === فلاش أحمر عشوائي ===
-        function triggerFlash() {
-            if (prankEnded) return;
-            redFlash.classList.add('active');
-            mainContent.classList.add('shake');
-            skull.classList.add('flash');
-            setTimeout(() => {
-                redFlash.classList.remove('active');
-                mainContent.classList.remove('shake');
-                skull.classList.remove('flash');
-            }, 150);
-        }
+async function typeCommand(lineEl, text) {
+  const cmdSpan = lineEl.querySelector('.command');
+  const cursorSpan = lineEl.querySelector('.typing-cursor');
+  
+  for (let i = 0; i < text.length; i++) {
+    cmdSpan.textContent += text[i];
+    if (i % 3 === 0) await sleep(30);
+  }
+  cursorSpan.remove();
+}
 
-        // === تحديث عدد الملفات ===
-        let fileCount = 0;
-        function updateFiles() {
-            if (prankEnded) return;
-            fileCount += Math.floor(Math.random() * 50) + 10;
-            document.getElementById('fakeFiles').textContent = fileCount.toLocaleString() + ' files';
-        }
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-        // === شريط التقدم ===
-        let progress = 0;
-        function updateProgress() {
-            if (prankEnded) return;
-            progress += Math.random() * 3 + 0.5;
-            if (progress > 100) progress = 100;
-            progressFill.style.width = progress + '%';
-            progressLabel.textContent = `EXTRACTING DATA... ${Math.floor(progress)}%`;
+// ===== PROGRESS ANIMATION =====
+async function animateProgress(fillId, valId, duration) {
+  const fill = document.getElementById(fillId);
+  const val = document.getElementById(valId);
+  const start = performance.now();
+  
+  return new Promise(resolve => {
+    function step(now) {
+      const elapsed = now - start;
+      const pct = Math.min(100, (elapsed / duration) * 100);
+      fill.style.width = pct + '%';
+      val.textContent = Math.floor(pct) + '%';
+      if (pct < 100) requestAnimationFrame(step);
+      else resolve();
+    }
+    requestAnimationFrame(step);
+  });
+}
 
-            if (progress >= 100) {
-                progressLabel.textContent = 'EXTRACTION COMPLETE — UPLOADING TO SERVER...';
-                progressLabel.style.color = '#ff0040';
-            }
-        }
+// ===== FAKE DATA =====
+function generateIP() {
+  return Math.floor(Math.random()*200+10) + '.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255);
+}
 
-        // === تغيير عنوان الصفحة ===
-        const pageTitles = ['تم الاختراق!', 'HACKED!', 'WARNING!', 'YOUR DATA IS MINE', 'مسروق!', 'BREACHED!'];
-        let titleIdx = 0;
-        function flickerTitle() {
-            if (prankEnded) return;
-            document.title = pageTitles[titleIdx % pageTitles.length];
-            titleIdx++;
-        }
+function animatePackets() {
+  const el = document.getElementById('fakePackets');
+  let count = 0;
+  const interval = setInterval(() => {
+    count += Math.floor(Math.random() * 200 + 50);
+    el.textContent = count.toLocaleString();
+  }, 100);
+  setTimeout(() => clearInterval(interval), 12000);
+}
 
-        // === تسلسل الأحداث ===
-        // ثانية 0: فلاش أول
-        setTimeout(() => triggerFlash(), 500);
+// ===== MAIN SEQUENCE =====
+async function runSequence() {
+  await sleep(1500);
+  
+  // Show fake info
+  document.getElementById('fakeIP').textContent = generateIP();
+  document.getElementById('fakePort').textContent = '44' + Math.floor(Math.random()*40+10);
+  animatePackets();
+  
+  // Terminal typing
+  for (let i = 0; i < terminalLines.length; i++) {
+    const line = terminalLines[i];
+    const el = createLine(line);
+    
+    await sleep(100);
+    el.classList.add('visible');
+    terminalBody.scrollTop = terminalBody.scrollHeight;
+    
+    if (line.type === 'cmd') {
+      await typeCommand(el, line.text);
+      await sleep(200);
+      glitchTitle();
+    } else {
+      if (line.type === 'success') { flash(); glitch(); }
+      if (line.type === 'warn') glitch();
+      await sleep(line.type === 'success' ? 400 : 150);
+    }
+  }
+  
+  // Show progress bars
+  await sleep(300);
+  document.getElementById('progressSection').classList.add('visible');
+  
+  document.getElementById('prog1').classList.add('visible');
+  await sleep(200);
+  await animateProgress('prog1Fill', 'prog1Val', 1500);
+  
+  document.getElementById('prog2').classList.add('visible');
+  await sleep(200);
+  await animateProgress('prog2Fill', 'prog2Val', 2000);
+  
+  document.getElementById('prog3').classList.add('visible');
+  await sleep(200);
+  await animateProgress('prog3Fill', 'prog3Val', 1800);
+  
+  // Show status cards
+  await sleep(300);
+  document.getElementById('statusGrid').classList.add('visible');
+  const cards = ['sc1','sc2','sc3','sc4'];
+  for (const c of cards) {
+    document.getElementById(c).classList.add('visible');
+    flash();
+    await sleep(250);
+  }
+  
+  // Random glitches
+  for (let i = 0; i < 5; i++) {
+    glitch();
+    flash();
+    await sleep(200 + Math.random() * 300);
+  }
+  
+  // Countdown
+  await sleep(500);
+  for (let n = 3; n >= 1; n--) {
+    const cd = document.getElementById('countdown');
+    cd.textContent = n;
+    cd.classList.remove('active');
+    void cd.offsetWidth;
+    cd.classList.add('active');
+    flash();
+    glitch();
+    await sleep(900);
+  }
+  
+  // ACCESS GRANTED
+  const overlay = document.getElementById('accessOverlay');
+  overlay.classList.add('active');
+  flash();
+  
+  await sleep(2000);
+  
+  // REDIRECT
+  window.location.href = redirectURL;
+}
 
-        // ثانية 1: ظهور أيقونة التحذير
-        setTimeout(() => warningIcon.classList.add('visible'), 800);
+// Start after page load
+window.addEventListener('load', () => {
+  setTimeout(runSequence, 500);
+});
 
-        // ثانية 1.5: فلاش + عنوان
-        setTimeout(() => {
-            triggerFlash();
-            hackTitle.classList.add('visible');
-        }, 1500);
+// Random background glitches
+setInterval(() => {
+  if (Math.random() > 0.7) glitch();
+}, 3000);
+</script>
 
-        // ثانية 2.5: النص الفرعي
-        setTimeout(() => subText.classList.add('visible'), 2500);
-
-        // ثانية 3: صندوق المعلومات
-        setTimeout(() => infoBox.classList.add('visible'), 3000);
-
-        // ثانية 3.5: شريط التقدم
-        setTimeout(() => progressSection.classList.add('visible'), 3500);
-
-        // ثانية 4: الكونسول
-        setTimeout(() => consoleBox.classList.add('visible'), 4000);
-
-        // === المؤقتات المتكررة ===
-        setInterval(addConsoleLine, 800);
-        setInterval(updateFiles, 1200);
-        setInterval(updateProgress, 500);
-        setInterval(flickerTitle, 600);
-        setInterval(triggerFlash, 4000);
-
-        // === إنهاء المقلب بعد 15 ثانية ===
-        setTimeout(() => {
-            prankEnded = true;
-            // فلاش أخير كبير
-            redFlash.classList.add('active');
-            mainContent.classList.add('shake');
-            setTimeout(() => {
-                redFlash.classList.remove('active');
-                mainContent.classList.remove('shake');
-            }, 300);
-
-            // إخفاء كل شي
-            setTimeout(() => {
-                document.getElementById('matrixCanvas').style.opacity = '0';
-                document.querySelector('.scanline').style.opacity = '0';
-                document.querySelector('.noise-overlay').style.opacity = '0';
-                document.querySelector('.border-anim').style.opacity = '0';
-                skull.style.opacity = '0';
-                mainContent.style.opacity = '0';
-                consoleBox.style.opacity = '0';
-                document.querySelector('.timestamp').style.opacity = '0';
-                document.querySelector('.ip-display').style.opacity = '0';
-
-                // إظهار كشف المقلب
-                setTimeout(() => {
-                    prankReveal.classList.add('visible');
-                    document.title = 'بدي اهينك';
-                    document.body.style.cursor = 'default';
-                    cursor.style.display = 'none';
-                }, 800);
-            }, 500);
-        }, 15000);
-    </script>
 </body>
 </html>
