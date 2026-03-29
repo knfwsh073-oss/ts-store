@@ -2,879 +2,424 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>System Breach Detected</title>
-
-<!-- ⬇️⬇️ غيّر هذا الرابط لرابطك ⬇️⬇️ -->
-<!-- الرابط موجود في المتغير redirectURL بأسفل الكود -->
-
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>فيديو جديد</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
   :root {
-    --green: #00ff41;
-    --green-dim: #00aa2a;
-    --green-dark: #003b00;
-    --red: #ff0040;
-    --red-dim: #aa0028;
-    --cyan: #00e5ff;
-    --bg: #0a0a0a;
-    --terminal-bg: rgba(0, 10, 0, 0.85);
+    --bg: #0d0d0d;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #e21b3c;
+    --accent-glow: rgba(226,27,60,0.4);
+    --text: #f0f0f0;
+    --muted: #888;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
+    font-family: 'Tajawal', sans-serif;
     background: var(--bg);
-    color: var(--green);
-    font-family: 'JetBrains Mono', monospace;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-    cursor: none;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
   }
 
-  /* Custom Cursor */
-  .cursor {
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--green);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99999;
-    transition: transform 0.1s;
-    mix-blend-mode: difference;
-  }
-  .cursor-dot {
-    position: fixed;
-    width: 4px;
-    height: 4px;
-    background: var(--green);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99999;
-  }
-
-  /* Matrix Canvas */
-  #matrixCanvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-    opacity: 0.3;
-  }
-
-  /* Scanline overlay */
-  .scanlines {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 1;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0,0,0,0.15) 0px,
-      rgba(0,0,0,0.15) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-  }
-
-  /* Vignette */
-  .vignette {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 1;
-    pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.8) 100%);
-  }
-
-  /* Flash effect */
-  .flash {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 100;
-    pointer-events: none;
-    background: white;
-    opacity: 0;
-    transition: opacity 0.05s;
-  }
-  .flash.active {
-    opacity: 0.8;
-  }
-
-  /* Warning Banner */
-  .warning-banner {
-    position: fixed;
-    top: 0; left: 0;
+  .container {
     width: 100%;
-    z-index: 10;
-    background: var(--red);
-    color: white;
-    text-align: center;
-    padding: 6px 0;
-    font-size: 11px;
+    max-width: 420px;
+  }
+
+  /* === رأس الصفحة === */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .header-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #ff6b81);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .header-info h3 {
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    opacity: 0;
-    animation: slideDown 0.5s ease forwards 0.3s;
-    box-shadow: 0 2px 20px rgba(255,0,64,0.5);
+    line-height: 1.3;
+  }
+  .header-info span {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .header-badge {
+    margin-right: auto;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+  @keyframes badgePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
   }
 
-  @keyframes slideDown {
-    from { transform: translateY(-100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  /* Main Container */
-  .main-container {
+  /* === الصورة === */
+  .thumbnail-wrapper {
     position: relative;
-    z-index: 5;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 16/10;
+    background: #111;
+  }
+  .thumbnail-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: blur(1px) brightness(0.7);
+    transition: filter 0.4s, transform 0.4s;
+  }
+  .thumbnail-wrapper:hover img {
+    filter: blur(0px) brightness(0.85);
+    transform: scale(1.03);
+  }
+
+  /* تراكب الصورة */
+  .thumbnail-overlay {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    padding: 50px 20px 20px;
+    gap: 8px;
+    background: rgba(0,0,0,0.35);
+    transition: background 0.4s;
+  }
+  .thumbnail-wrapper:hover .thumbnail-overlay {
+    background: rgba(0,0,0,0.2);
   }
 
-  /* Skull / Icon */
-  .skull-container {
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: glitchIn 0.5s ease forwards 0.5s;
-  }
-  .skull-container svg {
+  .play-circle {
     width: 60px;
     height: 60px;
-    filter: drop-shadow(0 0 20px var(--green));
-  }
-
-  @keyframes glitchIn {
-    0% { opacity: 0; transform: scale(3) rotate(10deg); filter: blur(10px); }
-    50% { opacity: 1; transform: scale(0.8) rotate(-5deg); }
-    70% { transform: scale(1.2) rotate(2deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0); }
-  }
-
-  /* Title */
-  .title {
-    font-family: 'Tajawal', sans-serif;
-    font-size: clamp(28px, 6vw, 56px);
-    font-weight: 900;
-    color: var(--green);
-    text-shadow: 0 0 40px rgba(0,255,65,0.5), 0 0 80px rgba(0,255,65,0.2);
-    text-align: center;
-    margin-bottom: 5px;
-    opacity: 0;
-    animation: fadeInUp 0.8s ease forwards 0.8s;
-    position: relative;
-  }
-
-  .title.glitch {
-    animation: glitchText 0.3s ease, fadeInUp 0.8s ease forwards 0.8s;
-  }
-
-  @keyframes glitchText {
-    0% { text-shadow: 0 0 40px rgba(0,255,65,0.5); transform: translate(0); }
-    20% { text-shadow: -3px 0 var(--red), 3px 0 var(--cyan); transform: translate(-3px, 2px); }
-    40% { text-shadow: 3px 0 var(--red), -3px 0 var(--cyan); transform: translate(3px, -2px); }
-    60% { text-shadow: -2px 0 var(--cyan), 2px 0 var(--red); transform: translate(-2px, 1px); }
-    80% { text-shadow: 2px 0 var(--red), -2px 0 var(--cyan); transform: translate(2px, -1px); }
-    100% { text-shadow: 0 0 40px rgba(0,255,65,0.5); transform: translate(0); }
-  }
-
-  .subtitle {
-    font-size: clamp(10px, 2vw, 14px);
-    color: var(--red);
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    margin-bottom: 25px;
-    opacity: 0;
-    animation: fadeInUp 0.8s ease forwards 1s;
-    text-shadow: 0 0 20px rgba(255,0,64,0.5);
-  }
-
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Terminal */
-  .terminal {
-    width: min(700px, 95vw);
-    background: var(--terminal-bg);
-    border: 1px solid var(--green-dark);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 60px rgba(0,255,65,0.1), inset 0 0 60px rgba(0,0,0,0.5);
-    opacity: 0;
-    animation: fadeInUp 0.8s ease forwards 1.2s;
-    backdrop-filter: blur(10px);
-  }
-
-  .terminal-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: rgba(0,255,65,0.05);
-    border-bottom: 1px solid var(--green-dark);
-  }
-  .terminal-dot {
-    width: 10px; height: 10px;
     border-radius: 50%;
-  }
-  .terminal-dot.red { background: #ff5f56; }
-  .terminal-dot.yellow { background: #ffbd2e; }
-  .terminal-dot.green { background: #27c93f; }
-  .terminal-title {
-    flex: 1;
-    text-align: center;
-    font-size: 11px;
-    color: rgba(0,255,65,0.5);
-    letter-spacing: 2px;
-  }
-
-  .terminal-body {
-    padding: 16px;
-    height: 280px;
-    overflow-y: auto;
-    font-size: 12px;
-    line-height: 1.8;
-    direction: ltr;
-    text-align: left;
-    scrollbar-width: thin;
-    scrollbar-color: var(--green-dark) transparent;
-  }
-  .terminal-body::-webkit-scrollbar { width: 4px; }
-  .terminal-body::-webkit-scrollbar-track { background: transparent; }
-  .terminal-body::-webkit-scrollbar-thumb { background: var(--green-dark); border-radius: 2px; }
-
-  .line { opacity: 0; }
-  .line.visible { opacity: 1; }
-  .line .prompt { color: var(--green); }
-  .line .command { color: var(--green); font-weight: 700; }
-  .line .output { color: var(--green-dim); }
-  .line .warning { color: var(--red); }
-  .line .success { color: var(--cyan); }
-  .line .info { color: #888; }
-
-  .typing-cursor {
-    display: inline-block;
-    width: 8px;
-    height: 14px;
-    background: var(--green);
-    animation: blink 0.8s step-end infinite;
-    vertical-align: middle;
-    margin-left: 2px;
-  }
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
-
-  /* Progress Section */
-  .progress-section {
-    width: min(700px, 95vw);
-    margin-top: 20px;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-  .progress-section.visible { opacity: 1; }
-
-  .progress-item {
-    margin-bottom: 12px;
-    opacity: 0;
-    transform: translateX(-20px);
-    transition: all 0.4s ease;
-  }
-  .progress-item.visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    margin-bottom: 4px;
-    direction: ltr;
-    text-align: left;
-  }
-  .progress-label .name { color: var(--green); letter-spacing: 1px; }
-  .progress-label .percent { color: var(--cyan); font-weight: 700; }
-  .progress-bar {
-    width: 100%;
-    height: 4px;
-    background: rgba(0,255,65,0.1);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    width: 0%;
-    border-radius: 2px;
-    transition: width 0.1s linear;
-    box-shadow: 0 0 10px currentColor;
-  }
-  .progress-fill.green { background: var(--green); color: var(--green); }
-  .progress-fill.cyan { background: var(--cyan); color: var(--cyan); }
-  .progress-fill.red { background: var(--red); color: var(--red); }
-
-  /* Status Grid */
-  .status-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 10px;
-    width: min(700px, 95vw);
-    margin-top: 20px;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-  .status-grid.visible { opacity: 1; }
-
-  .status-card {
-    background: rgba(0,255,65,0.03);
-    border: 1px solid rgba(0,255,65,0.1);
-    border-radius: 6px;
-    padding: 12px;
-    text-align: center;
-    opacity: 0;
-    transform: scale(0.8);
-    transition: all 0.4s ease;
-  }
-  .status-card.visible {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .status-card .label {
-    font-size: 9px;
-    color: #666;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    direction: ltr;
-  }
-  .status-card .value {
-    font-size: 18px;
-    font-weight: 700;
-    direction: ltr;
-  }
-  .status-card .value.green { color: var(--green); text-shadow: 0 0 10px rgba(0,255,65,0.5); }
-  .status-card .value.red { color: var(--red); text-shadow: 0 0 10px rgba(255,0,64,0.5); }
-  .status-card .value.cyan { color: var(--cyan); text-shadow: 0 0 10px rgba(0,229,255,0.5); }
-
-  /* Access Granted Overlay */
-  .access-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 50;
+    background: rgba(226,27,60,0.9);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.95);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s;
+    box-shadow: 0 0 30px var(--accent-glow);
+    transition: transform 0.3s, box-shadow 0.3s;
   }
-  .access-overlay.active {
-    opacity: 1;
-    pointer-events: all;
+  .thumbnail-wrapper:hover .play-circle {
+    transform: scale(1.15);
+    box-shadow: 0 0 50px var(--accent-glow);
   }
-  .access-text {
-    font-family: 'Tajawal', sans-serif;
-    font-size: clamp(30px, 8vw, 80px);
-    font-weight: 900;
-    color: var(--green);
-    text-shadow: 0 0 60px rgba(0,255,65,0.8), 0 0 120px rgba(0,255,65,0.3);
-    animation: pulse 1s ease-in-out infinite;
-    text-align: center;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.02); }
+  .play-circle i {
+    font-size: 22px;
+    color: #fff;
+    margin-right: -3px;
   }
 
-  /* Corner decorations */
-  .corner {
-    position: fixed;
-    z-index: 5;
-    width: 60px;
-    height: 60px;
-    opacity: 0.3;
-  }
-  .corner-tl { top: 40px; left: 10px; border-top: 2px solid var(--green); border-left: 2px solid var(--green); }
-  .corner-tr { top: 40px; right: 10px; border-top: 2px solid var(--green); border-right: 2px solid var(--green); }
-  .corner-bl { bottom: 10px; left: 10px; border-bottom: 2px solid var(--green); border-left: 2px solid var(--green); }
-  .corner-br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--green); border-right: 2px solid var(--green); }
-
-  /* Bottom info bar */
-  .info-bar {
-    position: fixed;
-    bottom: 0; left: 0;
-    width: 100%;
-    z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 20px;
-    font-size: 9px;
-    color: #333;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    direction: ltr;
-    border-top: 1px solid rgba(0,255,65,0.05);
-  }
-
-  /* Glitch overlay layers */
-  .glitch-layer {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 90;
-    pointer-events: none;
-    opacity: 0;
-  }
-  .glitch-layer.active {
-    animation: glitchOverlay 0.15s ease;
-  }
-  @keyframes glitchOverlay {
-    0% { opacity: 0; }
-    25% { opacity: 0.1; background: var(--red); transform: translateX(-5px); }
-    50% { opacity: 0; }
-    75% { opacity: 0.1; background: var(--cyan); transform: translateX(5px); }
-    100% { opacity: 0; transform: translateX(0); }
-  }
-
-  /* Countdown */
-  .countdown {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 60;
-    font-size: 120px;
+  .duration-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    font-size: 11px;
     font-weight: 700;
-    color: var(--green);
-    text-shadow: 0 0 80px rgba(0,255,65,0.8);
-    opacity: 0;
-    pointer-events: none;
-  }
-  .countdown.active {
-    animation: countPop 0.8s ease forwards;
-  }
-  @keyframes countPop {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(3); }
-    30% { opacity: 1; transform: translate(-50%, -50%) scale(0.9); }
-    50% { transform: translate(-50%, -50%) scale(1.05); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    padding: 2px 8px;
+    border-radius: 4px;
   }
 
-  /* Mobile adjustments */
-  @media (max-width: 640px) {
-    .terminal-body { height: 200px; font-size: 10px; }
-    .status-grid { grid-template-columns: repeat(2, 1fr); }
-    .cursor, .cursor-dot { display: none; }
-    body { cursor: default; }
+  .hd-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+  }
+
+  .blur-notice {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+
+  /* === معلومات الفيديو === */
+  .video-info {
+    padding: 14px 4px;
+  }
+  .video-title {
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .video-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .video-meta span i {
+    margin-left: 4px;
+    font-size: 11px;
+  }
+
+  /* === الزر الرئيسي === */
+  .enter-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), #c41030);
+    color: #fff;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    box-shadow: 0 4px 25px var(--accent-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .enter-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .enter-btn:hover::before { opacity: 1; }
+  .enter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 35px var(--accent-glow);
+  }
+  .enter-btn:active { transform: translateY(0) scale(0.98); }
+  .enter-btn i { font-size: 18px; }
+
+  /* === تحذير === */
+  .warning-box {
+    margin-top: 14px;
+    background: rgba(226,27,60,0.06);
+    border: 1px solid rgba(226,27,60,0.15);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .warning-box i {
+    color: var(--accent);
+    font-size: 14px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .warning-box p {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* === تعليقات وهمية === */
+  .comments-section {
+    margin-top: 20px;
+  }
+  .comments-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .comments-title i { font-size: 12px; }
+
+  .comment {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+  }
+  .comment:nth-child(2) { animation-delay: 0.2s; }
+  .comment:nth-child(3) { animation-delay: 0.4s; }
+  .comment:nth-child(4) { animation-delay: 0.6s; }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  .comment-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: #fff;
+  }
+  .comment-body {
+    flex: 1;
+  }
+  .comment-name {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .comment-text {
+    font-size: 12px;
+    color: #bbb;
+    line-height: 1.6;
+  }
+  .comment-time {
+    font-size: 10px;
+    color: #555;
+    margin-top: 4px;
+  }
+  .comment-likes {
+    font-size: 10px;
+    color: #555;
+    margin-top: 2px;
+  }
+  .comment-likes i { margin-left: 3px; font-size: 9px; }
+
+  /* === عدد المشاهدات المباشرة === */
+  .live-views {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: livePulse 1.5s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--accent-glow); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 6px transparent; }
   }
 </style>
 </head>
 <body>
 
-<!-- Custom Cursor -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-dot" id="cursorDot"></div>
+<div class="container">
 
-<!-- Matrix Background -->
-<canvas id="matrixCanvas"></canvas>
-
-<!-- Overlays -->
-<div class="scanlines"></div>
-<div class="vignette"></div>
-<div class="flash" id="flash"></div>
-<div class="glitch-layer" id="glitchLayer"></div>
-
-<!-- Corners -->
-<div class="corner corner-tl"></div>
-<div class="corner corner-tr"></div>
-<div class="corner corner-bl"></div>
-<div class="corner corner-br"></div>
-
-<!-- Warning Banner -->
-<div class="warning-banner">⚠ SECURITY BREACH DETECTED — UNAUTHORIZED ACCESS ⚠</div>
-
-<!-- Main Content -->
-<div class="main-container">
-
-  <!-- Skull Icon -->
-  <div class="skull-container">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M12 2C8.5 2 5 5 5 9c0 2.5 1 4 2.5 5.5V17h9v-2.5C18 13 19 11.5 19 9c0-4-3.5-7-7-7z" stroke="var(--green)"/>
-      <line x1="5" y1="17" x2="19" y2="17" stroke="var(--green)"/>
-      <line x1="8" y1="17" x2="8" y2="20" stroke="var(--green)"/>
-      <line x1="12" y1="17" x2="12" y2="20" stroke="var(--green)"/>
-      <line x1="16" y1="17" x2="16" y2="20" stroke="var(--green)"/>
-      <circle cx="9.5" cy="9" r="1.5" fill="var(--green)"/>
-      <circle cx="14.5" cy="9" r="1.5" fill="var(--green)"/>
-      <path d="M10 12.5c0 0 1 1 2 1s2-1 2-1" stroke="var(--green)" stroke-width="1.2"/>
-    </svg>
-  </div>
-
-  <!-- Title -->
-  <div class="title" id="mainTitle">تم اختراق النظام</div>
-  <div class="subtitle">System Compromised — Initializing Exploit</div>
-
-  <!-- Terminal -->
-  <div class="terminal">
-    <div class="terminal-header">
-      <div class="terminal-dot red"></div>
-      <div class="terminal-dot yellow"></div>
-      <div class="terminal-dot green"></div>
-      <div class="terminal-title">root@kali:~/exploit</div>
+  <!-- رأس -->
+  <div class="header">
+    <div class="header-avatar">X</div>
+    <div class="header-info">
+      <h3>فيديو مسرّب جديد</h3>
+      <span>منذ 23 دقيقة</span>
     </div>
-    <div class="terminal-body" id="terminalBody"></div>
+    <div class="header-badge">جديد</div>
   </div>
 
-  <!-- Progress Bars -->
-  <div class="progress-section" id="progressSection">
-    <div class="progress-item" id="prog1">
-      <div class="progress-label">
-        <span class="name">[●] Firewall Bypass</span>
-        <span class="percent" id="prog1Val">0%</span>
+  <!-- الصورة المصغرة -->
+  <div class="thumbnail-wrapper" id="thumbnail">
+    <img src="https://z-cdn-media.chatglm.cn/files/5aba5735-69b7-4361-b366-d5520f8581f2.png?auth_key=1874743588-f36c1bec1dc047a394011fe4acd8555b-0-bc0ec01b7ce2fd624c649b9bf9a99647" alt="thumbnail">
+    <div class="thumbnail-overlay">
+      <div class="play-circle">
+        <i class="fas fa-play"></i>
       </div>
-      <div class="progress-bar"><div class="progress-fill green" id="prog1Fill"></div></div>
+      <span class="blur-notice">اضغط لرفع الغشاوة</span>
     </div>
-    <div class="progress-item" id="prog2">
-      <div class="progress-label">
-        <span class="name">[●] Database Decrypt</span>
-        <span class="percent" id="prog2Val">0%</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill cyan" id="prog2Fill"></div></div>
-    </div>
-    <div class="progress-item" id="prog3">
-      <div class="progress-label">
-        <span class="name">[●] Data Exfiltration</span>
-        <span class="percent" id="prog3Val">0%</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill red" id="prog3Fill"></div></div>
-    </div>
+    <span class="duration-badge">03:24</span>
+    <span class="hd-badge">HD</span>
   </div>
 
-  <!-- Status Grid -->
-  <div class="status-grid" id="statusGrid">
-    <div class="status-card" id="sc1">
-      <div class="label">IP Address</div>
-      <div class="value green" id="fakeIP">—</div>
+  <!-- معلومات -->
+  <div class="video-info">
+    <div class="video-title">فيديو مسرب — لا يُعرض للجميع — محتوى حصري</div>
+    <div class="video-meta">
+      <span><i class="fas fa-eye"></i> 184K مشاهدة</span>
+      <span><i class="fas fa-heart"></i> 12.4K</span>
+      <span><i class="fas fa-share"></i> 3.2K</span>
     </div>
-    <div class="status-card" id="sc2">
-      <div class="label">Port</div>
-      <div class="value cyan" id="fakePort">—</div>
-    </div>
-    <div class="status-card" id="sc3">
-      <div class="label">Packets Sent</div>
-      <div class="value red" id="fakePackets">0</div>
-    </div>
-    <div class="status-card" id="sc4">
-      <div class="label">Encryption</div>
-      <div class="value green">AES-256</div>
+
+    <!-- الزر -->
+    <button class="enter-btn" id="enterBtn">
+      <i class="fas fa-lock-open"></i>
+      دخول الموقع
+    </button>
+
+    <!-- تحذير -->
+    <div class="warning-box">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>هذا المحتوى مقيّد بالعمر. بالضغط على الدخول أنت تؤكد أن عمرك يفوق 18 عاماً وأنك تقبل مسؤولية المشاهدة.</p>
     </div>
   </div>
-
-</div>
-
-<!-- Access Overlay -->
-<div class="access-overlay" id="accessOverlay">
-  <div class="access-text">تم الدخول بنجاح ✓</div>
-</div>
-
-<!-- Countdown -->
-<div class="countdown" id="countdown"></div>
-
-<!-- Info Bar -->
-<div class="info-bar">
-  <span id="clock">00:00:00</span>
-  <span>EXPLOIT FRAMEWORK v4.7.2</span>
-  <span id="fps">0 FPS</span>
 </div>
 
 <script>
-// ⬇️⬇️⬇️ غيّر هذا الرابط لرابطك ⬇️⬇️⬇️
-const redirectURL = "https://www.pornhub.com/";
-// ⬆️⬆️⬆️ غيّر هذا الرابط لرابطك ⬆️⬆️⬆️
+  // الرابط اللي ينقل له
+  const redirectURL = "https://youtube.com/shorts/RkZCcteibyc?si=gVPJDRc9sPnygg0M";
 
-// ===== MATRIX RAIN =====
-const canvas = document.getElementById('matrixCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF{}[]<>/\\';
-const fontSize = 14;
-const columns = Math.floor(canvas.width / fontSize);
-const drops = Array(columns).fill(1);
-
-function drawMatrix() {
-  ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#00ff41';
-  ctx.font = fontSize + 'px JetBrains Mono';
-  for (let i = 0; i < drops.length; i++) {
-    const text = chars[Math.floor(Math.random() * chars.length)];
-    ctx.fillStyle = Math.random() > 0.98 ? '#fff' : '#00ff41';
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-    drops[i]++;
-  }
-}
-setInterval(drawMatrix, 50);
-
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
-
-// ===== CUSTOM CURSOR =====
-const cursor = document.getElementById('cursor');
-const cursorDot = document.getElementById('cursorDot');
-document.addEventListener('mousemove', (e) => {
-  cursor.style.left = e.clientX - 10 + 'px';
-  cursor.style.top = e.clientY - 10 + 'px';
-  cursorDot.style.left = e.clientX - 2 + 'px';
-  cursorDot.style.top = e.clientY - 2 + 'px';
-});
-
-// ===== CLOCK =====
-function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent = now.toTimeString().split(' ')[0];
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// ===== FPS =====
-let frameCount = 0;
-let lastTime = performance.now();
-function countFPS() {
-  frameCount++;
-  const now = performance.now();
-  if (now - lastTime >= 1000) {
-    document.getElementById('fps').textContent = frameCount + ' FPS';
-    frameCount = 0;
-    lastTime = now;
-  }
-  requestAnimationFrame(countFPS);
-}
-countFPS();
-
-// ===== FLASH & GLITCH HELPERS =====
-function flash() {
-  const el = document.getElementById('flash');
-  el.classList.add('active');
-  setTimeout(() => el.classList.remove('active'), 80);
-}
-
-function glitch() {
-  const el = document.getElementById('glitchLayer');
-  el.classList.remove('active');
-  void el.offsetWidth;
-  el.classList.add('active');
-  setTimeout(() => el.classList.remove('active'), 200);
-}
-
-function glitchTitle() {
-  const t = document.getElementById('mainTitle');
-  t.classList.add('glitch');
-  setTimeout(() => t.classList.remove('glitch'), 400);
-}
-
-// ===== TERMINAL TYPING =====
-const terminalBody = document.getElementById('terminalBody');
-const terminalLines = [
-  { type: 'cmd', text: 'nmap -sV -sC --script=vuln 192.168.1.0/24' },
-  { type: 'out', text: 'Scanning 256 hosts... [################] 100%' },
-  { type: 'warn', text: 'WARNING: 14 open ports detected' },
-  { type: 'cmd', text: 'exploit -t sql_injection --target=db.server.local' },
-  { type: 'out', text: '[*] Loading payload: union_based_sqli' },
-  { type: 'out', text: '[*] Testing parameter: id=1\' OR 1=1--' },
-  { type: 'success', text: '[+] VULNERABLE! SQL Injection confirmed' },
-  { type: 'cmd', text: 'hashcat -m 1000 -a 0 hashes.txt rockyou.txt' },
-  { type: 'out', text: '[*] Cracking NTLM hashes...' },
-  { type: 'success', text: '[+] Hash cracked: admin@system:Qw3rT!99$' },
-  { type: 'cmd', text: 'msfconsole -x "use exploit/multi/handler"' },
-  { type: 'out', text: '[*] Starting reverse handler on port 4444...' },
-  { type: 'success', text: '[+] Meterpreter session 1 opened!' },
-  { type: 'cmd', text: 'dump -all --dest=./extracted_data/' },
-  { type: 'out', text: '[*] Extracting: users.db (2.4 GB)' },
-  { type: 'out', text: '[*] Extracting: financial_records.enc (890 MB)' },
-  { type: 'success', text: '[+] All data extracted successfully!' },
-  { type: 'warn', text: '[!] Trace detected — initiating cleanup...' },
-  { type: 'cmd', text: 'cover-tracks --wipe-logs --clear-history' },
-  { type: 'success', text: '[+] All traces eliminated. Access secured.' },
-];
-
-function createLine(lineData) {
-  const div = document.createElement('div');
-  div.className = 'line';
-  
-  if (lineData.type === 'cmd') {
-    div.innerHTML = `<span class="prompt">root@kali:~# </span><span class="command"></span><span class="typing-cursor"></span>`;
-  } else if (lineData.type === 'warn') {
-    div.innerHTML = `<span class="warning">${lineData.text}</span>`;
-  } else if (lineData.type === 'success') {
-    div.innerHTML = `<span class="success">${lineData.text}</span>`;
-  } else {
-    div.innerHTML = `<span class="output">${lineData.text}</span>`;
-  }
-  
-  terminalBody.appendChild(div);
-  return div;
-}
-
-async function typeCommand(lineEl, text) {
-  const cmdSpan = lineEl.querySelector('.command');
-  const cursorSpan = lineEl.querySelector('.typing-cursor');
-  
-  for (let i = 0; i < text.length; i++) {
-    cmdSpan.textContent += text[i];
-    if (i % 3 === 0) await sleep(30);
-  }
-  cursorSpan.remove();
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// ===== PROGRESS ANIMATION =====
-async function animateProgress(fillId, valId, duration) {
-  const fill = document.getElementById(fillId);
-  const val = document.getElementById(valId);
-  const start = performance.now();
-  
-  return new Promise(resolve => {
-    function step(now) {
-      const elapsed = now - start;
-      const pct = Math.min(100, (elapsed / duration) * 100);
-      fill.style.width = pct + '%';
-      val.textContent = Math.floor(pct) + '%';
-      if (pct < 100) requestAnimationFrame(step);
-      else resolve();
-    }
-    requestAnimationFrame(step);
+  // الضغط على الصورة أو الزر = التحويل
+  document.getElementById('thumbnail').addEventListener('click', () => {
+    window.location.href = redirectURL;
   });
-}
 
-// ===== FAKE DATA =====
-function generateIP() {
-  return Math.floor(Math.random()*200+10) + '.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255);
-}
+  document.getElementById('enterBtn').addEventListener('click', () => {
+    window.location.href = redirectURL;
+  });
 
-function animatePackets() {
-  const el = document.getElementById('fakePackets');
-  let count = 0;
-  const interval = setInterval(() => {
-    count += Math.floor(Math.random() * 200 + 50);
-    el.textContent = count.toLocaleString();
-  }, 100);
-  setTimeout(() => clearInterval(interval), 12000);
-}
-
-// ===== MAIN SEQUENCE =====
-async function runSequence() {
-  await sleep(1500);
-  
-  // Show fake info
-  document.getElementById('fakeIP').textContent = generateIP();
-  document.getElementById('fakePort').textContent = '44' + Math.floor(Math.random()*40+10);
-  animatePackets();
-  
-  // Terminal typing
-  for (let i = 0; i < terminalLines.length; i++) {
-    const line = terminalLines[i];
-    const el = createLine(line);
-    
-    await sleep(100);
-    el.classList.add('visible');
-    terminalBody.scrollTop = terminalBody.scrollHeight;
-    
-    if (line.type === 'cmd') {
-      await typeCommand(el, line.text);
-      await sleep(200);
-      glitchTitle();
-    } else {
-      if (line.type === 'success') { flash(); glitch(); }
-      if (line.type === 'warn') glitch();
-      await sleep(line.type === 'success' ? 400 : 150);
-    }
-  }
-  
-  // Show progress bars
-  await sleep(300);
-  document.getElementById('progressSection').classList.add('visible');
-  
-  document.getElementById('prog1').classList.add('visible');
-  await sleep(200);
-  await animateProgress('prog1Fill', 'prog1Val', 1500);
-  
-  document.getElementById('prog2').classList.add('visible');
-  await sleep(200);
-  await animateProgress('prog2Fill', 'prog2Val', 2000);
-  
-  document.getElementById('prog3').classList.add('visible');
-  await sleep(200);
-  await animateProgress('prog3Fill', 'prog3Val', 1800);
-  
-  // Show status cards
-  await sleep(300);
-  document.getElementById('statusGrid').classList.add('visible');
-  const cards = ['sc1','sc2','sc3','sc4'];
-  for (const c of cards) {
-    document.getElementById(c).classList.add('visible');
-    flash();
-    await sleep(250);
-  }
-  
-  // Random glitches
-  for (let i = 0; i < 5; i++) {
-    glitch();
-    flash();
-    await sleep(200 + Math.random() * 300);
-  }
-  
-  // Countdown
-  await sleep(500);
-  for (let n = 3; n >= 1; n--) {
-    const cd = document.getElementById('countdown');
-    cd.textContent = n;
-    cd.classList.remove('active');
-    void cd.offsetWidth;
-    cd.classList.add('active');
-    flash();
-    glitch();
-    await sleep(900);
-  }
-  
-  // ACCESS GRANTED
-  const overlay = document.getElementById('accessOverlay');
-  overlay.classList.add('active');
-  flash();
-  
-  await sleep(2000);
-  
-  // REDIRECT
-  window.location.href = redirectURL;
-}
-
-// Start after page load
-window.addEventListener('load', () => {
-  setTimeout(runSequence, 500);
-});
-
-// Random background glitches
-setInterval(() => {
-  if (Math.random() > 0.7) glitch();
-}, 3000);
+  // تحديث عداد المشاهدات بشكل عشوائي
+  const liveEl = document.getElementById('liveCount');
+  let count = 1247;
+  setInterval(() => {
+    count += Math.floor(Math.random() * 5) - 2; // بين -2 و +2
+    if (count < 1100) count = 1100 + Math.floor(Math.random() * 100);
+    liveEl.textContent = count.toLocaleString('ar-EG') + ' شخص يشاهد الآن';
+  }, 3000);
 </script>
 
 </body>
